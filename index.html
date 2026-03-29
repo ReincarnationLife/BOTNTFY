@@ -11,337 +11,164 @@
 <title>Мой канал</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f7; color: #1a1a1a; min-height: 100vh; }
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #f5f5f7;
-    color: #1a1a1a;
-    min-height: 100vh;
-  }
-
-  /* AUTH SCREEN */
   #auth-screen {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 24px;
     background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
   }
-
-  .auth-card {
-    background: white;
-    border-radius: 24px;
-    padding: 40px 32px;
-    width: 100%;
-    max-width: 380px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-  }
-
-  .auth-logo {
-    width: 64px;
-    height: 64px;
-    background: linear-gradient(135deg, #4F46E5, #7C3AED);
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 24px;
-    font-size: 32px;
-  }
-
-  .auth-title {
-    font-size: 22px;
-    font-weight: 700;
-    text-align: center;
-    color: #1a1a1a;
-    margin-bottom: 8px;
-  }
-
-  .auth-subtitle {
-    font-size: 14px;
-    color: #666;
-    text-align: center;
-    margin-bottom: 32px;
-  }
-
-  .auth-input {
-    width: 100%;
-    padding: 14px 16px;
-    border: 1.5px solid #e5e7eb;
-    border-radius: 12px;
-    font-size: 16px;
-    letter-spacing: 2px;
-    text-align: center;
-    outline: none;
-    transition: border-color 0.2s;
-    margin-bottom: 16px;
-  }
-
+  .auth-card { background: white; border-radius: 24px; padding: 40px 32px; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+  .auth-logo { width: 64px; height: 64px; background: linear-gradient(135deg, #4F46E5, #7C3AED); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 32px; }
+  .auth-title { font-size: 22px; font-weight: 700; text-align: center; color: #1a1a1a; margin-bottom: 8px; }
+  .auth-subtitle { font-size: 14px; color: #666; text-align: center; margin-bottom: 32px; }
+  .auth-input { width: 100%; padding: 14px 16px; border: 1.5px solid #e5e7eb; border-radius: 12px; font-size: 16px; letter-spacing: 2px; text-align: center; outline: none; transition: border-color 0.2s; margin-bottom: 16px; }
   .auth-input:focus { border-color: #4F46E5; }
-
-  .auth-btn {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #4F46E5, #7C3AED);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
-  }
-
+  .auth-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #4F46E5, #7C3AED); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s, transform 0.1s; }
   .auth-btn:active { transform: scale(0.98); }
   .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .auth-error { color: #ef4444; font-size: 13px; text-align: center; margin-top: 12px; display: none; }
 
-  .auth-error {
-    color: #ef4444;
-    font-size: 13px;
-    text-align: center;
-    margin-top: 12px;
-    display: none;
-  }
-
-  /* MAIN APP */
   #app-screen { display: none; min-height: 100vh; }
-
-  .app-header {
-    background: white;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #e5e7eb;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
+  .app-header { background: white; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 100; }
+  .header-left { display: flex; align-items: center; gap: 10px; }
   .header-title { font-size: 18px; font-weight: 700; }
+  .sub-badge { font-size: 12px; background: #ecfdf5; color: #059669; padding: 4px 10px; border-radius: 20px; font-weight: 500; }
+  .sub-badge.expired { background: #fef2f2; color: #dc2626; }
 
-  .sub-badge {
-    font-size: 12px;
-    background: #ecfdf5;
-    color: #059669;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-weight: 500;
-  }
+  .update-dot { width: 8px; height: 8px; background: #4F46E5; border-radius: 50%; display: none; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
 
-  .sub-badge.expired {
-    background: #fef2f2;
-    color: #dc2626;
-  }
+  .logout-btn { background: none; border: none; color: #9ca3af; font-size: 13px; cursor: pointer; padding: 4px 8px; }
+  .expired-banner { background: #fef2f2; border-bottom: 1px solid #fecaca; padding: 12px 20px; text-align: center; font-size: 14px; color: #dc2626; }
+
+  .notif-banner { background: #f0f9ff; border-bottom: 1px solid #bae6fd; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .notif-banner-text { font-size: 13px; color: #0369a1; }
+  .notif-btn { background: #0ea5e9; color: white; border: none; border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .notif-dismiss { background: none; border: none; color: #9ca3af; font-size: 18px; cursor: pointer; padding: 0 4px; }
+
+  .install-banner { background: #f5f3ff; border-bottom: 1px solid #ddd6fe; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; display: none; }
+  .install-banner-text { font-size: 13px; color: #6d28d9; }
+  .install-btn { background: #7C3AED; color: white; border: none; border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; }
 
   .posts-list { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
-
-  .post-card {
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
-  }
-
-  .post-media {
-    width: 100%;
-    max-height: 320px;
-    object-fit: cover;
-    display: block;
-  }
-
+  .post-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 8px rgba(0,0,0,0.06); }
+  .post-card.new-post { animation: slideIn 0.3s ease; }
+  @keyframes slideIn { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+  .post-media { width: 100%; max-height: 320px; object-fit: cover; display: block; }
   .post-body { padding: 16px; }
+  .post-date { font-size: 12px; color: #9ca3af; margin-bottom: 8px; }
+  .post-text { font-size: 15px; line-height: 1.6; color: #1a1a1a; white-space: pre-wrap; word-break: break-word; }
+  .post-video { width: 100%; max-height: 320px; display: block; background: #000; }
 
-  .post-date {
-    font-size: 12px;
-    color: #9ca3af;
-    margin-bottom: 8px;
-  }
-
-  .post-text {
-    font-size: 15px;
-    line-height: 1.6;
-    color: #1a1a1a;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  .post-video-wrap {
-    position: relative;
-    width: 100%;
-    background: #000;
-  }
-
-  .post-video {
-    width: 100%;
-    max-height: 320px;
-    display: block;
-  }
-
-  .loading {
-    text-align: center;
-    padding: 48px 20px;
-    color: #9ca3af;
-    font-size: 14px;
-  }
-
-  .spinner {
-    width: 32px;
-    height: 32px;
-    border: 3px solid #e5e7eb;
-    border-top-color: #4F46E5;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 12px;
-  }
-
+  .loading { text-align: center; padding: 48px 20px; color: #9ca3af; font-size: 14px; }
+  .spinner { width: 32px; height: 32px; border: 3px solid #e5e7eb; border-top-color: #4F46E5; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  .empty-state {
-    text-align: center;
-    padding: 64px 20px;
-    color: #9ca3af;
-  }
-
+  .empty-state { text-align: center; padding: 64px 20px; color: #9ca3af; }
   .empty-icon { font-size: 48px; margin-bottom: 16px; }
 
-  .logout-btn {
-    background: none;
-    border: none;
-    color: #9ca3af;
-    font-size: 13px;
-    cursor: pointer;
-    padding: 4px 8px;
-  }
-
-  .expired-banner {
-    background: #fef2f2;
-    border-bottom: 1px solid #fecaca;
-    padding: 12px 20px;
-    text-align: center;
-    font-size: 14px;
-    color: #dc2626;
-  }
-
-  .install-banner {
-    background: #f0f9ff;
-    border: 1px solid #bae6fd;
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin: 16px 16px 0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    display: none;
-  }
-
-  .install-banner-text { flex: 1; font-size: 13px; color: #0369a1; }
-  .install-btn {
-    background: #0ea5e9;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-  }
+  .refresh-bar { text-align: center; padding: 8px; font-size: 12px; color: #9ca3af; }
 </style>
 </head>
 <body>
 
-<!-- AUTH SCREEN -->
 <div id="auth-screen">
   <div class="auth-card">
     <div class="auth-logo">📡</div>
     <h1 class="auth-title">Добро пожаловать</h1>
     <p class="auth-subtitle">Введите ключ активации для доступа к контенту</p>
-    <input type="text" class="auth-input" id="key-input" placeholder="XXXX-XXXX-XXXX" maxlength="19">
+    <input type="text" class="auth-input" id="key-input" placeholder="XXXX-XXXX-XXXX" maxlength="14">
     <button class="auth-btn" id="activate-btn" onclick="activate()">Активировать</button>
     <p class="auth-error" id="auth-error">Ключ не найден или истёк срок действия</p>
   </div>
 </div>
 
-<!-- APP SCREEN -->
 <div id="app-screen">
-  <div class="expired-banner" id="expired-banner" style="display:none">
-    Ваша подписка истекла. Обратитесь к администратору для продления.
+  <div class="expired-banner" id="expired-banner" style="display:none">Ваша подписка истекла. Обратитесь к администратору.</div>
+
+  <div class="notif-banner" id="notif-banner" style="display:none">
+    <span class="notif-banner-text">🔔 Включите уведомления о новых постах</span>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="notif-btn" onclick="requestNotifications()">Включить</button>
+      <button class="notif-dismiss" onclick="dismissNotif()">×</button>
+    </div>
   </div>
+
+  <div class="install-banner" id="install-banner">
+    <span class="install-banner-text">📲 Установите приложение на главный экран</span>
+    <button class="install-btn" id="install-btn">Установить</button>
+  </div>
+
   <div class="app-header">
-    <span class="header-title">📡 Мой канал</span>
+    <div class="header-left">
+      <span class="header-title">📡 Мой канал</span>
+      <div class="update-dot" id="update-dot" title="Новые посты"></div>
+    </div>
     <div style="display:flex;align-items:center;gap:8px">
       <span class="sub-badge" id="sub-badge">Активна</span>
       <button class="logout-btn" onclick="logout()">Выйти</button>
     </div>
   </div>
 
-  <div class="install-banner" id="install-banner">
-    <span class="install-banner-text">Установите приложение на главный экран для быстрого доступа</span>
-    <button class="install-btn" id="install-btn">Установить</button>
-  </div>
-
   <div id="posts-container">
-    <div class="loading">
-      <div class="spinner"></div>
-      Загружаем посты...
-    </div>
+    <div class="loading"><div class="spinner"></div>Загружаем посты...</div>
   </div>
+  <div class="refresh-bar" id="refresh-bar"></div>
 </div>
 
 <script>
 const CONFIG = {
   SERVER_URL: 'https://marginal-ruthy-noneorgnone-142a91d0.koyeb.app',
-  BOT_TOKEN: '8745346860:AAFsSr8_CUCJuS4bMj1teG1cz_pHZxQEwRA',
-  CHANNEL_ID: '-1003731131803',
-  APP_NAME: 'Мой канал'
+  POLL_INTERVAL: 30000
 };
 
+let deviceId = localStorage.getItem('device_id') || (() => {
+  const id = 'dev_' + Math.random().toString(36).slice(2);
+  localStorage.setItem('device_id', id);
+  return id;
+})();
+
+let lastPostId = 0;
+let pollTimer = null;
+let allPosts = [];
 let deferredPrompt = null;
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
+// ── Install banner ──────────────────────────────────────────
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredPrompt = e;
   document.getElementById('install-banner').style.display = 'flex';
 });
-
-document.getElementById('install-btn')?.addEventListener('click', async () => {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    document.getElementById('install-banner').style.display = 'none';
-  }
+document.getElementById('install-btn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('install-banner').style.display = 'none';
 });
 
+// ── Key input formatting ────────────────────────────────────
 document.getElementById('key-input').addEventListener('input', function() {
-  let v = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+  let v = this.value.replace(/[^A-Za-z0-9]/g,'').toUpperCase();
   let parts = [];
-  for (let i = 0; i < v.length && i < 12; i += 4) parts.push(v.slice(i, i+4));
+  for (let i=0; i<v.length && i<12; i+=4) parts.push(v.slice(i,i+4));
   this.value = parts.join('-');
 });
 
+// ── Activate ────────────────────────────────────────────────
 async function activate() {
   const key = document.getElementById('key-input').value.trim();
   const btn = document.getElementById('activate-btn');
-  const err = document.getElementById('auth-error');
-
   if (!key || key.length < 4) { showError('Введите ключ активации'); return; }
 
-  btn.disabled = true;
-  btn.textContent = 'Проверяем...';
-  err.style.display = 'none';
+  btn.disabled = true; btn.textContent = 'Проверяем...';
+  document.getElementById('auth-error').style.display = 'none';
 
   try {
     const res = await fetch(`${CONFIG.SERVER_URL}/activate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key })
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({key, device_id: deviceId})
     });
     const data = await res.json();
-
     if (data.valid) {
       localStorage.setItem('activation_key', key);
       localStorage.setItem('expires_at', data.expires_at);
@@ -349,113 +176,162 @@ async function activate() {
     } else {
       showError(data.message || 'Ключ не найден или истёк срок действия');
     }
-  } catch(e) {
-    showError('Ошибка подключения к серверу');
-  }
+  } catch(e) { showError('Ошибка подключения к серверу'); }
 
-  btn.disabled = false;
-  btn.textContent = 'Активировать';
+  btn.disabled = false; btn.textContent = 'Активировать';
 }
 
 function showError(msg) {
-  const err = document.getElementById('auth-error');
-  err.textContent = msg;
-  err.style.display = 'block';
+  const e = document.getElementById('auth-error');
+  e.textContent = msg; e.style.display = 'block';
 }
 
 function logout() {
+  clearInterval(pollTimer);
   localStorage.removeItem('activation_key');
   localStorage.removeItem('expires_at');
+  lastPostId = 0; allPosts = [];
   document.getElementById('app-screen').style.display = 'none';
   document.getElementById('auth-screen').style.display = 'flex';
 }
 
+// ── Show app ────────────────────────────────────────────────
 function showApp(expiresAt) {
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('app-screen').style.display = 'block';
 
   const expDate = new Date(expiresAt);
-  const now = new Date();
-  const daysLeft = Math.ceil((expDate - now) / (1000 * 60 * 60 * 24));
-
+  const daysLeft = Math.ceil((expDate - new Date()) / 86400000);
   const badge = document.getElementById('sub-badge');
+
   if (daysLeft <= 0) {
-    badge.textContent = 'Истекла';
-    badge.classList.add('expired');
+    badge.textContent = 'Истекла'; badge.classList.add('expired');
     document.getElementById('expired-banner').style.display = 'block';
   } else if (daysLeft <= 2) {
-    badge.textContent = `Осталось ${daysLeft} дн.`;
-    badge.classList.add('expired');
+    badge.textContent = `Осталось ${daysLeft} дн.`; badge.classList.add('expired');
   } else {
     badge.textContent = `До ${expDate.toLocaleDateString('ru-RU')}`;
   }
 
-  loadPosts();
+  // Show notification prompt if not already granted
+  if ('Notification' in window && Notification.permission === 'default') {
+    setTimeout(() => document.getElementById('notif-banner').style.display = 'flex', 2000);
+  }
+
+  loadPosts(true);
+  startPolling();
 }
 
-async function loadPosts() {
-  const container = document.getElementById('posts-container');
+// ── Notifications ───────────────────────────────────────────
+async function requestNotifications() {
+  const perm = await Notification.requestPermission();
+  document.getElementById('notif-banner').style.display = 'none';
+  if (perm === 'granted') {
+    new Notification('Мой канал', {body: 'Уведомления включены! Вы будете получать новые посты.', icon: '/BOTNTFY/icon-192.png'});
+  }
+}
+
+function dismissNotif() {
+  document.getElementById('notif-banner').style.display = 'none';
+  localStorage.setItem('notif_dismissed', '1');
+}
+
+function sendNotification(post) {
+  if (Notification.permission !== 'granted') return;
+  const text = post.text ? post.text.slice(0, 80) : (post.photo ? '📷 Новое фото' : '🎥 Новое видео');
+  new Notification('📡 Мой канал — новый пост', {body: text, icon: '/BOTNTFY/icon-192.png'});
+}
+
+// ── Polling ─────────────────────────────────────────────────
+function startPolling() {
+  clearInterval(pollTimer);
+  pollTimer = setInterval(() => loadPosts(false), CONFIG.POLL_INTERVAL);
+}
+
+function updateRefreshBar() {
+  const bar = document.getElementById('refresh-bar');
+  let secs = Math.round(CONFIG.POLL_INTERVAL / 1000);
+  bar.textContent = `Обновление через ${secs} сек.`;
+  let t = setInterval(() => {
+    secs--;
+    if (secs <= 0) { clearInterval(t); bar.textContent = 'Обновляем...'; }
+    else bar.textContent = `Обновление через ${secs} сек.`;
+  }, 1000);
+}
+
+// ── Load posts ───────────────────────────────────────────────
+async function loadPosts(initial = false) {
+  const key = localStorage.getItem('activation_key');
+  if (!key) return;
 
   try {
-    const key = localStorage.getItem('activation_key');
-    const res = await fetch(`${CONFIG.SERVER_URL}/posts?key=${encodeURIComponent(key)}`);
+    const res = await fetch(
+      `${CONFIG.SERVER_URL}/posts?key=${encodeURIComponent(key)}&device_id=${deviceId}&last_id=${lastPostId}`
+    );
     const data = await res.json();
 
     if (!data.valid) { logout(); return; }
 
-    if (!data.posts || data.posts.length === 0) {
-      container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>Постов пока нет</p></div>`;
-      return;
+    const newPosts = data.posts || [];
+
+    if (initial) {
+      allPosts = newPosts;
+      lastPostId = data.last_id || 0;
+      renderPosts(allPosts, false);
+    } else if (newPosts.length > 0) {
+      // New posts arrived
+      document.getElementById('update-dot').style.display = 'block';
+      newPosts.forEach(p => sendNotification(p));
+      allPosts = [...newPosts, ...allPosts];
+      lastPostId = data.last_id || lastPostId;
+      renderPosts(allPosts, true);
+      setTimeout(() => document.getElementById('update-dot').style.display = 'none', 3000);
     }
 
-    container.innerHTML = '<div class="posts-list">' + data.posts.map(renderPost).join('') + '</div>';
+    updateRefreshBar();
   } catch(e) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>Ошибка загрузки постов</p><br><small>${e.message}</small></div>`;
+    console.error('Poll error:', e);
   }
 }
 
-function renderPost(post) {
-  const date = new Date(post.date * 1000).toLocaleString('ru-RU', {
-    day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
-  });
+function renderPosts(posts, highlight) {
+  const container = document.getElementById('posts-container');
 
-  let mediaHtml = '';
-  if (post.photo) {
-    mediaHtml = `<img class="post-media" src="${post.photo}" alt="фото" loading="lazy">`;
-  } else if (post.video) {
-    mediaHtml = `<div class="post-video-wrap"><video class="post-video" controls preload="metadata" src="${post.video}"></video></div>`;
+  if (!posts.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>Постов пока нет</p></div>`;
+    return;
   }
 
-  const textHtml = post.text ? `<p class="post-text">${escapeHtml(post.text)}</p>` : '';
-
-  return `
-    <div class="post-card">
-      ${mediaHtml}
-      <div class="post-body">
-        <p class="post-date">${date}</p>
-        ${textHtml}
-      </div>
-    </div>
-  `;
+  container.innerHTML = '<div class="posts-list">' + posts.map((p, i) => renderPost(p, highlight && i === 0)).join('') + '</div>';
 }
 
-function escapeHtml(s) {
+function renderPost(post, isNew) {
+  const date = new Date(post.date * 1000).toLocaleString('ru-RU', {day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+  let media = '';
+  if (post.photo) media = `<img class="post-media" src="${post.photo}" alt="фото" loading="lazy">`;
+  else if (post.video) media = `<video class="post-video" controls preload="metadata" src="${post.video}"></video>`;
+  const text = post.text ? `<p class="post-text">${escHtml(post.text)}</p>` : '';
+  return `<div class="post-card${isNew?' new-post':''}">${media}<div class="post-body"><p class="post-date">${date}</p>${text}</div></div>`;
+}
+
+function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// Auto-login if key saved
+// ── Auto-login ───────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   const key = localStorage.getItem('activation_key');
   const exp = localStorage.getItem('expires_at');
-  if (key && exp) {
-    showApp(exp);
-  }
+  if (key && exp) showApp(exp);
+
+  // Re-ask notifications if dismissed long ago
+  if (localStorage.getItem('notif_dismissed')) return;
 });
 </script>
 
 <script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
 </script>
 </body>
