@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#4F46E5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Мой канал">
+<link rel="manifest" href="manifest.json">
+<title>Мой канал</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f5f5f7;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+
+  /* AUTH SCREEN */
+  #auth-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+  }
+
+  .auth-card {
+    background: white;
+    border-radius: 24px;
+    padding: 40px 32px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+
+  .auth-logo {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #4F46E5, #7C3AED);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 32px;
+  }
+
+  .auth-title {
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+  }
+
+  .auth-subtitle {
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .auth-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+  }
+
+  .auth-input:focus { border-color: #4F46E5; }
+
+  .auth-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #4F46E5, #7C3AED);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .auth-btn:active { transform: scale(0.98); }
+  .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .auth-error {
+    color: #ef4444;
+    font-size: 13px;
+    text-align: center;
+    margin-top: 12px;
+    display: none;
+  }
+
+  /* MAIN APP */
+  #app-screen { display: none; min-height: 100vh; }
+
+  .app-header {
+    background: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-title { font-size: 18px; font-weight: 700; }
+
+  .sub-badge {
+    font-size: 12px;
+    background: #ecfdf5;
+    color: #059669;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .sub-badge.expired {
+    background: #fef2f2;
+    color: #dc2626;
+  }
+
+  .posts-list { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+
+  .post-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+  }
+
+  .post-media {
+    width: 100%;
+    max-height: 320px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .post-body { padding: 16px; }
+
+  .post-date {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-bottom: 8px;
+  }
+
+  .post-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #1a1a1a;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .post-video-wrap {
+    position: relative;
+    width: 100%;
+    background: #000;
+  }
+
+  .post-video {
+    width: 100%;
+    max-height: 320px;
+    display: block;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 48px 20px;
+    color: #9ca3af;
+    font-size: 14px;
+  }
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e5e7eb;
+    border-top-color: #4F46E5;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 12px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .empty-state {
+    text-align: center;
+    padding: 64px 20px;
+    color: #9ca3af;
+  }
+
+  .empty-icon { font-size: 48px; margin-bottom: 16px; }
+
+  .logout-btn {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 4px 8px;
+  }
+
+  .expired-banner {
+    background: #fef2f2;
+    border-bottom: 1px solid #fecaca;
+    padding: 12px 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #dc2626;
+  }
+
+  .install-banner {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 16px 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    display: none;
+  }
+
+  .install-banner-text { flex: 1; font-size: 13px; color: #0369a1; }
+  .install-btn {
+    background: #0ea5e9;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">📡</div>
+    <h1 class="auth-title">Добро пожаловать</h1>
+    <p class="auth-subtitle">Введите ключ активации для доступа к контенту</p>
+    <input type="text" class="auth-input" id="key-input" placeholder="XXXX-XXXX-XXXX" maxlength="19">
+    <button class="auth-btn" id="activate-btn" onclick="activate()">Активировать</button>
+    <p class="auth-error" id="auth-error">Ключ не найден или истёк срок действия</p>
+  </div>
+</div>
+
+<!-- APP SCREEN -->
+<div id="app-screen">
+  <div class="expired-banner" id="expired-banner" style="display:none">
+    Ваша подписка истекла. Обратитесь к администратору для продления.
+  </div>
+  <div class="app-header">
+    <span class="header-title">📡 Мой канал</span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="sub-badge" id="sub-badge">Активна</span>
+      <button class="logout-btn" onclick="logout()">Выйти</button>
+    </div>
+  </div>
+
+  <div class="install-banner" id="install-banner">
+    <span class="install-banner-text">Установите приложение на главный экран для быстрого доступа</span>
+    <button class="install-btn" id="install-btn">Установить</button>
+  </div>
+
+  <div id="posts-container">
+    <div class="loading">
+      <div class="spinner"></div>
+      Загружаем посты...
+    </div>
+  </div>
+</div>
+
+<script>
+const CONFIG = {
+  SERVER_URL: 'https://ВАШ-СЕРВЕР.railway.app',
+  BOT_TOKEN: 'ВАШ_BOT_TOKEN',
+  CHANNEL_ID: '@ВАШ_КАНАЛ',
+  APP_NAME: 'Мой канал'
+};
+
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-banner').style.display = 'flex';
+});
+
+document.getElementById('install-btn')?.addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    document.getElementById('install-banner').style.display = 'none';
+  }
+});
+
+document.getElementById('key-input').addEventListener('input', function() {
+  let v = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+  let parts = [];
+  for (let i = 0; i < v.length && i < 12; i += 4) parts.push(v.slice(i, i+4));
+  this.value = parts.join('-');
+});
+
+async function activate() {
+  const key = document.getElementById('key-input').value.trim();
+  const btn = document.getElementById('activate-btn');
+  const err = document.getElementById('auth-error');
+
+  if (!key || key.length < 4) { showError('Введите ключ активации'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Проверяем...';
+  err.style.display = 'none';
+
+  try {
+    const res = await fetch(`${CONFIG.SERVER_URL}/activate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key })
+    });
+    const data = await res.json();
+
+    if (data.valid) {
+      localStorage.setItem('activation_key', key);
+      localStorage.setItem('expires_at', data.expires_at);
+      showApp(data.expires_at);
+    } else {
+      showError(data.message || 'Ключ не найден или истёк срок действия');
+    }
+  } catch(e) {
+    showError('Ошибка подключения к серверу');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Активировать';
+}
+
+function showError(msg) {
+  const err = document.getElementById('auth-error');
+  err.textContent = msg;
+  err.style.display = 'block';
+}
+
+function logout() {
+  localStorage.removeItem('activation_key');
+  localStorage.removeItem('expires_at');
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'flex';
+}
+
+function showApp(expiresAt) {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+
+  const expDate = new Date(expiresAt);
+  const now = new Date();
+  const daysLeft = Math.ceil((expDate - now) / (1000 * 60 * 60 * 24));
+
+  const badge = document.getElementById('sub-badge');
+  if (daysLeft <= 0) {
+    badge.textContent = 'Истекла';
+    badge.classList.add('expired');
+    document.getElementById('expired-banner').style.display = 'block';
+  } else if (daysLeft <= 2) {
+    badge.textContent = `Осталось ${daysLeft} дн.`;
+    badge.classList.add('expired');
+  } else {
+    badge.textContent = `До ${expDate.toLocaleDateString('ru-RU')}`;
+  }
+
+  loadPosts();
+}
+
+async function loadPosts() {
+  const container = document.getElementById('posts-container');
+
+  try {
+    const key = localStorage.getItem('activation_key');
+    const res = await fetch(`${CONFIG.SERVER_URL}/posts?key=${encodeURIComponent(key)}`);
+    const data = await res.json();
+
+    if (!data.valid) { logout(); return; }
+
+    if (!data.posts || data.posts.length === 0) {
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>Постов пока нет</p></div>`;
+      return;
+    }
+
+    container.innerHTML = '<div class="posts-list">' + data.posts.map(renderPost).join('') + '</div>';
+  } catch(e) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>Ошибка загрузки постов</p><br><small>${e.message}</small></div>`;
+  }
+}
+
+function renderPost(post) {
+  const date = new Date(post.date * 1000).toLocaleString('ru-RU', {
+    day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
+  });
+
+  let mediaHtml = '';
+  if (post.photo) {
+    mediaHtml = `<img class="post-media" src="${post.photo}" alt="фото" loading="lazy">`;
+  } else if (post.video) {
+    mediaHtml = `<div class="post-video-wrap"><video class="post-video" controls preload="metadata" src="${post.video}"></video></div>`;
+  }
+
+  const textHtml = post.text ? `<p class="post-text">${escapeHtml(post.text)}</p>` : '';
+
+  return `
+    <div class="post-card">
+      ${mediaHtml}
+      <div class="post-body">
+        <p class="post-date">${date}</p>
+        ${textHtml}
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Auto-login if key saved
+window.addEventListener('DOMContentLoaded', () => {
+  const key = localStorage.getItem('activation_key');
+  const exp = localStorage.getItem('expires_at');
+  if (key && exp) {
+    showApp(exp);
+  }
+});
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
